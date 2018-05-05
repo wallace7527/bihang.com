@@ -109,6 +109,10 @@ func (e * EtherscanWS)Run() {
 	}
 }
 
+//每十分钟运行一次
+//查询最后更新块到最新块的交易记录
+//交易记录写入数据库
+
 func main() {
 	flag.Parse()
 	log.SetFlags(0)
