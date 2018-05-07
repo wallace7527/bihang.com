@@ -19,5 +19,5 @@ set str1=go-eam.exe
 start ""  "%cd%\%str1%"
 
 
-ping 127.1 -n 10 >nul
+ping 127.1 -n 600 >nul
 goto start
