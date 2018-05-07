@@ -1,3 +1,5 @@
+//使用net.Listener开始fasthttp Serve的例子
+//例如可以是UNIX Socket or TLS listener
 package main
 
 import (

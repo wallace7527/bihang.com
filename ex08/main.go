@@ -1,3 +1,4 @@
+//获取当前目录和父目录的例子
 package main
 
 import (

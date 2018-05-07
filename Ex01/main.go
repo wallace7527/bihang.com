@@ -1,3 +1,4 @@
+//直接使用ListenAndServe使用fasthttp的例子
 package main
 
 import (

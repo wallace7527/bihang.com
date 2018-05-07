@@ -1,3 +1,8 @@
+//这个例子展示了比特币区块链区块HASH的计算
+//块HASH计算需要注意的是
+// 小端字节序
+// 和两次HASH运算
+
 package main
 
 import (

@@ -21,7 +21,7 @@ func main() {
 	replies["Japan"] = "Tokyo"
 	replies["India"] = "New Delhi"
 
-
+	//使用了Proxy，墙里的人们能够理解
 	dialer, err := proxy.SOCKS5("tcp", "127.0.0.1:1080", nil, proxy.Direct)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "can't connect to the proxy:", err)
