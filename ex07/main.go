@@ -94,6 +94,10 @@ func retrieve(addr string, startBlock int) {
 	//遍历交易记录插入数据库
 	//开启事务
 	trans, err := TxBegin()
+	if err != nil {
+		log.Println("Error TxBegin:", err.Error())
+		return
+	}
 	for _ , tx := range txlistJson.Result {
 		proc++
 		err := trans.InsertTx(&tx)
