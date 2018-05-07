@@ -1,3 +1,18 @@
+/*
+Copyright 2018 The go-eam Authors
+This file is part of the go-eam library.
+
+etherscan_api
+封装etherscan api相关操作
+
+
+wanglei.ok@foxmail.com
+
+1.0
+版本时间：2018年4月13日18:32:12
+
+*/
+
 package main
 
 import (
@@ -11,6 +26,7 @@ const ETHERSCANAPI_TXLIST_FMT = "http://api.etherscan.io/api?module=account&acti
 
 
 type (
+	//交易数据对象
 	TxJson struct {
 		BlockNumber	string	`json:"blockNumber"`
 		TimeStamp	string	`json:"timeStamp"`
@@ -31,6 +47,7 @@ type (
 		IsError string `json:"isError"`
 	}
 
+	//交易列表对象
 	TxlistJson struct {
 		Status string  `json:"status"`
 		Message string  `json:"message"`
@@ -39,6 +56,7 @@ type (
 
 )
 
+//检索指定地址，指定块开始的交易记录
 func Retrieve(address string, startBlock int, skipLastBlock bool ) (*TxlistJson, error) {
 
 	if skipLastBlock {

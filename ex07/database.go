@@ -1,3 +1,18 @@
+/*
+Copyright 2018 The go-eam Authors
+This file is part of the go-eam library.
+
+database
+封装数据库相关操作
+
+
+wanglei.ok@foxmail.com
+
+1.0
+版本时间：2018年4月13日18:32:12
+
+*/
+
 package main
 
 import (
@@ -6,12 +21,16 @@ import (
 	"strconv"
 )
 
+//数据库操作对象
 var db *sql.DB
 
-const POOL_MAXOPENCONNS = 10
+const (
+	//连接池属性
+	POOL_MAXOPENCONNS = 10	//最大连接数
+	POOL_MAXIDLECONNS = 2	//空闲连接数
+)
 
-const POOL_MAXIDLECONNS = 2
-
+//打开数据库
 func OpenDatabase() error {
 	db1, err := sql.Open("mysql", "wanglei:123123@tcp(192.168.1.192:3306)/btc_dealing?charset=utf8")
 	if err != nil {
@@ -29,27 +48,33 @@ func OpenDatabase() error {
 	return nil
 }
 
+//关闭数据库
 func CloseDatabase() {
 	db.Close()
 }
 
+//自定义事务结构
 type MyTx struct {
 	Tx *sql.Tx
 }
 
+//开始事务并返回事务对象
 func TxBegin() (*MyTx, error) {
 	tx, err := db.Begin()
 	return &MyTx{tx}, err
 }
 
+//提交事务
 func (x *MyTx)Commit() error {
 	return x.Tx.Commit()
 }
 
+//回滚事务
 func (x *MyTx)Rollback() error {
 	return x.Tx.Rollback()
 }
 
+//使用事务插入一条交易记录
 func (x *MyTx) InsertTx(tx *TxJson) error {
 	stmt, err := x.Tx.Prepare("INSERT ethdata SET block_number=?,time_stamp=?,tx_hash=?,	nonce=?, block_hash=?, tx_index=?, from_addr=?, to_addr=?, contract_addr=?, amount=?")
 	if err != nil {
@@ -64,6 +89,8 @@ func (x *MyTx) InsertTx(tx *TxJson) error {
 	return err
 }
 
+//使用事务更新最后一个块计数
+//返回收到影响的记录数
 func (x *MyTx) UpdateLastBlock(addr string, block int) (affect int64) {
 
 	affect = 0
@@ -83,28 +110,31 @@ func (x *MyTx) UpdateLastBlock(addr string, block int) (affect int64) {
 	return
 }
 
+type EthAddressInfo struct {
+	Address string
+	LastBlock int
+}
 
-func GetEthAddress() (addr string, block int){
+//获取以太坊地址及最后块计数器
+func GetEthAddress() ([]EthAddressInfo, error){
 
-	addr = ""
-	block = 0
+	eais := make([]EthAddressInfo,0)
 
 	//查询数据
-	rows, err := db.Query("select address, last_block from address_log where type = 'eth' limit 1")
+	rows, err := db.Query("select address, last_block from address_log where type = 'eth'")
 	if err != nil {
-		return
+		return eais, err
 	}
 
-
-	if rows.Next() {
+	for rows.Next() {
 		a := ""
 		b := 0
 		err = rows.Scan(&a, &b)
 		if err != nil {
-			return
+			return eais, err
 		}
-		addr, block = a,b
+		eais = append(eais, EthAddressInfo{a,b})
 	}
 
-	return
+	return eais, nil
 }
