@@ -63,10 +63,47 @@ func createLogDir() string {
 	return  ""
 }
 
-//指定路径、前缀、后缀，返回格式化的日志文件路径
-//格式化方式为 /path/to/file/<prefix>YYYYMMDD<suffix>
-func logFilePath(path, prefix, suffix string) string {
-	return fmt.Sprintf("%s/%s%s%s", path, prefix, time.Now().Format("20060102"), suffix)
+
+type myWriter struct {
+	createdDate string
+	file *os.File
+}
+
+
+func (t *myWriter) Write(p []byte) (n int, err error) {
+
+	tt := string(p[5:10])
+	if t.createdDate != tt {
+		if err := t.rotateFile(time.Now()); err != nil {
+			log.Println(err)
+		}
+	}
+
+	return t.file.Write(p)
+}
+
+//分割日志文件
+func (t *myWriter) rotateFile(now time.Time) error {
+	t.createdDate = fmt.Sprintf("%02d/%02d", now.Month(), now.Day())
+	//创建新的日志文件
+	logDir := createLogDir()
+	if len(logDir) != 0 {
+		//baseName_YYYYMMDD.log
+		//格式化方式为 /path/to/file/<prefix>YYYYMMDD<suffix>
+		filePath := fmt.Sprintf("%s/%s%s%s", logDir, baseName()+"_", now.Format("20060102"), ".log")
+
+		file, err := os.OpenFile(filePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+		if err != nil {
+			return err
+		}
+
+		if t.file != nil {
+			t.file.Close()
+		}
+		t.file = file
+		//
+	}
+	return nil
 }
 
 //设置默认logger的
@@ -74,19 +111,5 @@ func logFilePath(path, prefix, suffix string) string {
 //设置日志输出到文件 ./log/baseName_YYYYMMDD.log
 func logSetup() {
 	log.SetFlags(log.Ldate | log.Lmicroseconds )
-
-	//创建日志文件夹
-	logDir := createLogDir()
-	if len(logDir) != 0 {
-		//baseName_YYYYMMDD.log
-		filePath := logFilePath(logDir, baseName()+"_",".log")
-		file, err := os.OpenFile(filePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-		if err != nil {
-			return
-		}
-
-		log.SetOutput(io.MultiWriter(file, os.Stderr))
-	}
+	log.SetOutput(io.MultiWriter(&myWriter{}, os.Stderr))
 }
-
-
