@@ -31,8 +31,8 @@ const (
 )
 
 //打开数据库
-func OpenDatabase() error {
-	db1, err := sql.Open("mysql", "wanglei:123123@tcp(192.168.1.192:3306)/btc_dealing?charset=utf8")
+func OpenDatabase(dsn string) error {
+	db1, err := sql.Open("mysql", dsn)
 	if err != nil {
 		return err
 	}

@@ -22,7 +22,7 @@ import (
 )
 
 
-const ETHERSCANAPI_TXLIST_FMT = "http://api.etherscan.io/api?module=account&action=txlist&address=%s&startblock=%d&endblock=99999999&sort=asc&apikey=GI5M7WYJXTGQYGF747KKMZKSRTF3PXS3PZ"
+const ETHERSCANAPI_TXLIST_FMT = "http://api.etherscan.io/api?module=account&action=txlist&address=%s&startblock=%d&endblock=99999999&sort=asc&apikey=%s"
 
 
 type (
@@ -63,7 +63,7 @@ func Retrieve(address string, startBlock int, skipLastBlock bool ) (*TxlistJson,
 		startBlock++
 	}
 	// Retrieve the rss feed document from the web.
-	uri := fmt.Sprintf(ETHERSCANAPI_TXLIST_FMT, address, startBlock )
+	uri := fmt.Sprintf(ETHERSCANAPI_TXLIST_FMT, address, startBlock, config.EtherscanApi.Apikey )
 	//fmt.Println("URI:", uri)
 	resp, err := http.Get(uri)
 	if err != nil {

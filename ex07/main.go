@@ -33,8 +33,15 @@ func init() {
 }
 
 func main() {
+
+	if err := readConfig(); err != nil {
+		log.Println("Error readConfig:", err)
+		return
+	}
+
+
 	//打开数据库
-	if err := OpenDatabase(); err != nil {
+	if err := OpenDatabase(config.Mysql.DSN); err != nil {
 		log.Println("Error OpenDatabase:", err.Error())
 		return
 	}

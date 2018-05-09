@@ -110,6 +110,6 @@ func (t *myWriter) rotateFile(now time.Time) error {
 //标志位log.Ldate | log.Lmicroseconds
 //设置日志输出到文件 ./log/baseName_YYYYMMDD.log
 func logSetup() {
-	log.SetFlags(log.Ldate | log.Lmicroseconds )
+	log.SetFlags(log.Ldate | log.Lmicroseconds | log.Lshortfile )
 	log.SetOutput(io.MultiWriter(&myWriter{}, os.Stderr))
 }
