@@ -16,7 +16,6 @@ wanglei.ok@foxmail.com
 package main
 
 import (
-	"flag"
 	"net/url"
 	"os"
 	"os/signal"
@@ -50,44 +49,6 @@ func NewEtherscanWS() *EtherscanWS{
 	}
 }
 
-
-//type (
-//	//交易数据对象
-//	EventTxJson struct {
-//		BlockNumber	string	`json:"blockNumber"`
-//		TimeStamp	string	`json:"timeStamp"`
-//		Hash	string	`json:"hash"`
-//		Nonce	string	`json:"nonce"`
-//		BlockHash	string	`json:"blockHash"`
-//		TransactionIndex	string	`json:"transactionIndex"`
-//		From	string	`json:"from"`
-//		To	string	`json:"to"`
-//		Value	string	`json:"value"`
-//		Gas	string	`json:"gas"`
-//		GasPrice	string	`json:"gasPrice"`
-//		Input	string	`json:"input"`
-//		ContractAddress	string	`json:"contractAddress"`
-//		CumulativeGasUsed	string	`json:"cumulativeGasUsed"`
-//		GasUsed	string	`json:"gasUsed"`
-//		Confirmations	string	`json:"confirmations"`
-//		IsError string `json:"isError"`
-//	}
-//
-//	//交易列表对象
-//	EventTxlistJson struct {
-//		Event string  `json:"event"`
-//		Address string  `json:"address"`
-//		Result [] EventTxJson `json:"result"`
-//	}
-//
-//)
-
-func init(){
-	logSetup()
-
-	readConfig()
-}
-
 func (e * EtherscanWS)start() error {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
@@ -114,20 +75,20 @@ func (e * EtherscanWS)start() error {
 				return
 			}
 			log.Printf("Recv: %s", message)
-			var eventTxlistJson EventTxlistJson
-			err = json.NewDecoder(bytes.NewBuffer(message)).Decode(&eventTxlistJson)
+			var txlistJson TxlistJson
+			err = json.NewDecoder(bytes.NewBuffer(message)).Decode(&txlistJson)
 			if err != nil {
 				log.Println("Decode:", err)
 				continue
 			}
 
-			if eventTxlistJson.Event == "txlist" {
+			if txlistJson.Event == "txlist" {
 				//没有交易记录
-				if eventTxlistJson.Result == nil {
+				if txlistJson.Result == nil {
 					continue
 				}
 
-				addr := eventTxlistJson.Address
+				addr := txlistJson.Address
 				startBlock,ok := eais[addr]
 				if !ok {
 					continue
@@ -146,7 +107,7 @@ func (e * EtherscanWS)start() error {
 					log.Println("Error TxBegin:", err.Error())
 					continue
 				}
-				for _ , tx := range eventTxlistJson.Result {
+				for _ , tx := range txlistJson.Result {
 					proc++
 					err := trans.InsertTx(&tx)
 					if err != nil {
@@ -179,10 +140,10 @@ func (e * EtherscanWS)start() error {
 					}
 				}
 				trans.Commit()
-			} else if eventTxlistJson.Event == "subscribe-txlist" {
-				if eventTxlistJson.Status ==  "1" {
+			} else if txlistJson.Event == "subscribe-txlist" {
+				if txlistJson.Status ==  "1" {
 					//订阅成功检索一次历史数据
-					addr := eventTxlistJson.Message[4:]
+					addr := txlistJson.Message[4:]
 					startBlock,ok := eais[addr]
 					if ok {
 						retrieve(addr, startBlock)
@@ -339,16 +300,19 @@ func retrieve(addr string, startBlock int) {
 	trans.Commit()
 }
 
-
 //每十分钟运行一次
 //查询最后更新块到最新块的交易记录
 //交易记录写入数据库
-
 func main() {
-	flag.Parse()
+
+	if err := readConfig(); err != nil {
+		log.Println("Error readConfig:", err)
+		return
+	}
+
 
 	//打开数据库
-	if err := OpenDatabase(); err != nil {
+	if err := OpenDatabase(config.Mysql.DSN); err != nil {
 		log.Println("Error OpenDatabase:", err.Error())
 		return
 	}

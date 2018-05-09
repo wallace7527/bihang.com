@@ -19,7 +19,6 @@ import (
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 	"strconv"
-	"fmt"
 )
 
 //数据库操作对象
@@ -32,8 +31,7 @@ const (
 )
 
 //打开数据库
-func OpenDatabase() error {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8", config.Mysql.Username, config.Mysql.Password, config.Mysql.Host, config.Mysql.Port, config.Mysql.Database)
+func OpenDatabase(dsn string) error {
 	db1, err := sql.Open("mysql", dsn)
 	if err != nil {
 		return err
@@ -125,7 +123,7 @@ func GetEthAddress() (map[string]int, error){
 	eais := make(map[string]int,0)
 
 	//查询数据
-	rows, err := db.Query("select address, last_block from address_log where type = 'eth'")
+	rows, err := db.Query("select address, last_block from address_log where type = 'eth' and state <> '1'")
 	if err != nil {
 		return eais, err
 	}

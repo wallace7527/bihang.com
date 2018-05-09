@@ -47,15 +47,15 @@ type (
 		IsError string `json:"isError"`
 	}
 
-	//交易列表对象
-	TxlistJson struct {
-		Status string  `json:"status"`
-		Message string  `json:"message"`
-		Result [] TxJson `json:"result"`
-	}
+	////交易列表对象
+	//TxlistJson struct {
+	//	Status string  `json:"status"`
+	//	Message string  `json:"message"`
+	//	Result [] TxJson `json:"result"`
+	//}
 
 	//交易列表对象
-	EventTxlistJson struct {
+	TxlistJson struct {
 		Event string  `json:"event"`
 		Address string  `json:"address"`
 		Status string  `json:"status"`

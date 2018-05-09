@@ -12,11 +12,7 @@ var config Config
 type (
 	Config struct{
 		Mysql struct{
-			Username string
-			Password string
-			Host string
-			Port string
-			Database string
+			DSN string
 		}
 
 		EtherscanApi struct {
@@ -32,6 +28,6 @@ func iniFileName() string {
 	return strings.TrimSuffix(base, suffix) + ".ini"
 }
 
-func readConfig(){
-	gcfg.ReadFileInto(&config, iniFileName())
+func readConfig() error {
+	return gcfg.ReadFileInto(&config, iniFileName())
 }
