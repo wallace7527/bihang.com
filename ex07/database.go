@@ -123,7 +123,7 @@ func GetEthAddress() ([]EthAddressInfo, error){
 	eais := make([]EthAddressInfo,0)
 
 	//查询数据
-	rows, err := db.Query("select address, last_block from address_log where type = 'eth'")
+	rows, err := db.Query("select address, last_block from address_log where type = 'eth' and state <> '1'")
 	if err != nil {
 		return eais, err
 	}
