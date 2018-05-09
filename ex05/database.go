@@ -82,6 +82,7 @@ func (x *MyTx) InsertTx(tx *TxJson) error {
 	if err != nil {
 		return err
 	}
+	defer stmt.Close()
 
 	_, err = stmt.Exec(tx.BlockNumber, tx.TimeStamp, tx.Hash, tx.Nonce, tx.BlockHash, tx.TransactionIndex, tx.From, tx.To, tx.ContractAddress, tx.Value )
 	if err != nil {
@@ -101,6 +102,7 @@ func (x *MyTx) UpdateLastBlock(addr string, block int) (affect int64) {
 	if err != nil {
 		return
 	}
+	defer stmt.Close()
 
 	res, err := stmt.Exec(strconv.Itoa(block), addr)
 	if err != nil {
