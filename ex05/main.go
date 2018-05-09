@@ -84,6 +84,8 @@ func NewEtherscanWS() *EtherscanWS{
 
 func init(){
 	logSetup()
+
+	readConfig()
 }
 
 func (e * EtherscanWS)start() error {

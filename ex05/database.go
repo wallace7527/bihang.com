@@ -19,6 +19,7 @@ import (
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 	"strconv"
+	"fmt"
 )
 
 //数据库操作对象
@@ -32,7 +33,8 @@ const (
 
 //打开数据库
 func OpenDatabase() error {
-	db1, err := sql.Open("mysql", "wanglei:123123@tcp(192.168.1.192:3306)/btc_dealing?charset=utf8")
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8", config.Mysql.Username, config.Mysql.Password, config.Mysql.Host, config.Mysql.Port, config.Mysql.Database)
+	db1, err := sql.Open("mysql", dsn)
 	if err != nil {
 		return err
 	}
@@ -76,7 +78,7 @@ func (x *MyTx)Rollback() error {
 
 //使用事务插入一条交易记录
 func (x *MyTx) InsertTx(tx *TxJson) error {
-	stmt, err := x.Tx.Prepare("INSERT ethdata SET block_number=?,time_stamp=?,tx_hash=?,	nonce=?, block_hash=?, tx_index=?, from_addr=?, to_addr=?, contract_addr=?, amount=?")
+	stmt, err := x.Tx.Prepare("INSERT ethdata SET block_number=?,time_stamp=?,tx_hash=?, nonce=?, block_hash=?, tx_index=?, from_addr=?, to_addr=?, contract_addr=?, amount=?")
 	if err != nil {
 		return err
 	}
