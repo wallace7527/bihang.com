@@ -22,9 +22,6 @@ import (
 )
 
 
-const ETHERSCANAPI_TXLIST_FMT = "http://api.etherscan.io/api?module=account&action=txlist&address=%s&startblock=%d&endblock=99999999&sort=asc&apikey=%s"
-
-
 type (
 	//交易数据对象
 	TxJson struct {
