@@ -17,6 +17,8 @@ type (
 
 		EtherscanApi struct {
 			ApiTxlist string
+			ApiAddress string
+			ApiTx string
 		}
 	}
 )

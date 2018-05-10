@@ -23,10 +23,6 @@ import (
 	"log"
 )
 
-const (
-	ETHERSCANAPI_ADDR   = "https://etherscan.io/address/"
-	ETHERSCANAPI_TX     = "https://etherscan.io/tx/"
-)
 
 func init() {
 	logSetup()
@@ -71,10 +67,10 @@ func retrieve(addr string, startBlock int) {
 	skip := 0
 
 	t1 := time.Now()
-	log.Printf("Begin retrieve.(Address: %s%s, StartBlock:%d)\n", ETHERSCANAPI_ADDR, addr, startBlock)
+	log.Printf("Begin retrieve.(Address: %s%s, StartBlock:%d)", config.EtherscanApi.ApiAddress, addr, startBlock)
 	defer func (){
 		elapsed := time.Since(t1)
-		log.Printf("End retrieve.(Elapsed:%v, Process:%d, Increase:%d, Skip:%d)\n", elapsed, proc, inc, skip)
+		log.Printf("End retrieve.(Elapsed:%v, Process:%d, Increase:%d, Skip:%d)", elapsed, proc, inc, skip)
 	}()
 
 	maxBlock := startBlock
@@ -113,14 +109,14 @@ func retrieve(addr string, startBlock int) {
 			//txString, _ := json.Marshal(tx)
 			errString := err.Error()
 			if strings.Contains(errString, "Duplicate entry") {
-				log.Printf("Skip Duplicate tx: %s%s", ETHERSCANAPI_TX,tx.Hash)
+				log.Printf("Skip Duplicate tx: %s%s", config.EtherscanApi.ApiTx,tx.Hash)
 			} else {
-				log.Printf("Error insertTx:%v, %s%s", errString, ETHERSCANAPI_TX, tx.Hash)
+				log.Printf("Error insertTx:%v, %s%s", errString, config.EtherscanApi.ApiTx, tx.Hash)
 			}
 			skip++
 		}else{
 			inc++
-			log.Printf("Increase tx: %s%s\n", ETHERSCANAPI_TX,tx.Hash)
+			log.Printf("Increase tx: %s%s", config.EtherscanApi.ApiTx,tx.Hash)
 		}
 
 
