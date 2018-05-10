@@ -113,13 +113,14 @@ func retrieve(addr string, startBlock int) {
 			//txString, _ := json.Marshal(tx)
 			errString := err.Error()
 			if strings.Contains(errString, "Duplicate entry") {
-				log.Printf("Skip Duplicate tx: %s%s\n", ETHERSCANAPI_TX,tx.Hash)
+				log.Printf("Skip Duplicate tx: %s%s", ETHERSCANAPI_TX,tx.Hash)
 			} else {
-				log.Println("Error insertTx:", errString, tx.Hash)
+				log.Printf("Error insertTx:%v, %s%s", errString, ETHERSCANAPI_TX, tx.Hash)
 			}
 			skip++
 		}else{
 			inc++
+			log.Printf("Increase tx: %s%s\n", ETHERSCANAPI_TX,tx.Hash)
 		}
 
 

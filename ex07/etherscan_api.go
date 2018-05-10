@@ -63,7 +63,7 @@ func Retrieve(address string, startBlock int, skipLastBlock bool ) (*TxlistJson,
 		startBlock++
 	}
 	// Retrieve the rss feed document from the web.
-	uri := fmt.Sprintf(ETHERSCANAPI_TXLIST_FMT, address, startBlock, config.EtherscanApi.Apikey )
+	uri := fmt.Sprintf(config.EtherscanApi.ApiTxlist, address, startBlock )
 	//fmt.Println("URI:", uri)
 	resp, err := http.Get(uri)
 	if err != nil {
