@@ -30,11 +30,6 @@ import (
 )
 
 
-const (
-	ETHERSCANAPI_ADDR   = "https://etherscan.io/address/"
-	ETHERSCANAPI_TX     = "https://etherscan.io/tx/"
-)
-
 var (
 	eais map[string]int
 )
@@ -115,13 +110,14 @@ func (e * EtherscanWS)start() error {
 						//txString, _ := json.Marshal(tx)
 						errString := err.Error()
 						if strings.Contains(errString, "Duplicate entry") {
-							log.Printf("Skip Duplicate tx: %s%s\n", ETHERSCANAPI_TX,tx.Hash)
+							log.Printf("Skip Duplicate tx: %s%s", config.EtherscanApi.ApiTx,tx.Hash)
 						} else {
-							log.Println("Error insertTx:", errString, tx.Hash)
+							log.Printf("Error insertTx:%v, %s%s", errString, config.EtherscanApi.ApiTx, tx.Hash)
 						}
 						skip++
 					}else{
 						inc++
+						log.Printf("Increase tx: %s%s", config.EtherscanApi.ApiTx,tx.Hash)
 					}
 
 					//最后块编号
@@ -229,7 +225,7 @@ func retrieve(addr string, startBlock int) {
 	skip := 0
 
 	t1 := time.Now()
-	log.Printf("Begin retrieve.(Address: %s%s, StartBlock:%d)\n", ETHERSCANAPI_ADDR, addr, startBlock)
+	log.Printf("Begin retrieve.(Address: %s%s, StartBlock:%d)\n", config.EtherscanApi.ApiAddress, addr, startBlock)
 	defer func (){
 		elapsed := time.Since(t1)
 		log.Printf("End retrieve.(Elapsed:%v, Process:%d, Increase:%d, Skip:%d)\n", elapsed, proc, inc, skip)
@@ -271,15 +267,15 @@ func retrieve(addr string, startBlock int) {
 			//txString, _ := json.Marshal(tx)
 			errString := err.Error()
 			if strings.Contains(errString, "Duplicate entry") {
-				log.Printf("Skip Duplicate tx: %s%s\n", ETHERSCANAPI_TX,tx.Hash)
+				log.Printf("Skip Duplicate tx: %s%s", config.EtherscanApi.ApiTx,tx.Hash)
 			} else {
-				log.Println("Error insertTx:", errString, tx.Hash)
+				log.Printf("Error insertTx:%v, %s%s", errString, config.EtherscanApi.ApiTx, tx.Hash)
 			}
 			skip++
 		}else{
 			inc++
+			log.Printf("Increase tx: %s%s", config.EtherscanApi.ApiTx,tx.Hash)
 		}
-
 
 		//最后块编号
 		b, ok := strconv.Atoi(tx.BlockNumber )

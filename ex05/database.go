@@ -76,7 +76,7 @@ func (x *MyTx)Rollback() error {
 
 //使用事务插入一条交易记录
 func (x *MyTx) InsertTx(tx *TxJson) error {
-	stmt, err := x.Tx.Prepare("INSERT ethdata SET block_number=?,time_stamp=?,tx_hash=?, nonce=?, block_hash=?, tx_index=?, from_addr=?, to_addr=?, contract_addr=?, amount=?")
+	stmt, err := x.Tx.Prepare("INSERT ec_ethdata SET block_number=?,time_stamp=?,tx_hash=?, nonce=?, block_hash=?, tx_index=?, from_addr=?, to_addr=?, contract_addr=?, amount=?")
 	if err != nil {
 		return err
 	}
@@ -96,7 +96,7 @@ func (x *MyTx) UpdateLastBlock(addr string, block int) (affect int64) {
 
 	affect = 0
 
-	stmt, err := x.Tx.Prepare("update address_log set last_block = ? where address = ?")
+	stmt, err := x.Tx.Prepare("update ec_address_log set last_block = ? where address = ?")
 	if err != nil {
 		return
 	}
@@ -123,7 +123,7 @@ func GetEthAddress() (map[string]int, error){
 	eais := make(map[string]int,0)
 
 	//查询数据
-	rows, err := db.Query("select address, last_block from address_log where type = 'eth' and state <> '1'")
+	rows, err := db.Query("select address, last_block from ec_address_log where type = 'eth' and state <> '1'")
 	if err != nil {
 		return eais, err
 	}

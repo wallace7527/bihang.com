@@ -22,9 +22,6 @@ import (
 )
 
 
-const ETHERSCANAPI_TXLIST_FMT = "http://api.etherscan.io/api?module=account&action=txlist&address=%s&startblock=%d&endblock=99999999&sort=asc&apikey=%s"
-
-
 type (
 	//交易数据对象
 	TxJson struct {
@@ -47,13 +44,6 @@ type (
 		IsError string `json:"isError"`
 	}
 
-	////交易列表对象
-	//TxlistJson struct {
-	//	Status string  `json:"status"`
-	//	Message string  `json:"message"`
-	//	Result [] TxJson `json:"result"`
-	//}
-
 	//交易列表对象
 	TxlistJson struct {
 		Event string  `json:"event"`
@@ -72,7 +62,7 @@ func Retrieve(address string, startBlock int, skipLastBlock bool ) (*TxlistJson,
 	}
 
 	// Retrieve the rss feed document from the web.
-	uri := fmt.Sprintf(ETHERSCANAPI_TXLIST_FMT, address, startBlock,config.EtherscanApi.Apikey)
+	uri := fmt.Sprintf(config.EtherscanApi.ApiTxlist, address, startBlock )
 	//fmt.Println("URI:", uri)
 	resp, err := http.Get(uri)
 	if err != nil {
