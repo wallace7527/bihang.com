@@ -80,6 +80,7 @@ func (t *myWriter) Write(p []byte) (n int, err error) {
 
 	tt := string(p[5:10])
 	if t.createdDate != tt {
+		//产生新的日志文件
 		if err := t.rotateFile(time.Now()); err != nil {
 			log.Println(err)
 		}
