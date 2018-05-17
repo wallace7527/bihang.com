@@ -9,7 +9,7 @@ import (
 
 // RequestHandler 类型，使用 RequestCtx 传递 HTTP 的数据
 func httpHandle(ctx *fasthttp.RequestCtx) {
-	fmt.Fprintf(ctx, "hello fasthttp") // *RequestCtx 实现了 io.Writer
+	fmt.Fprintf(ctx, "hello fasthttp1") // *RequestCtx 实现了 io.Writer
 }
 
 func main() {
