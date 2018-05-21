@@ -4,40 +4,44 @@ package evms
 import (
 	"encoding/hex"
 	"fmt"
-	"log"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
-var signhashers = []struct {
-	fn func([]byte) []byte
-	msg string
-}{
-	{func(data[]byte) []byte{
-		msg := fmt.Sprintf("\x19Ethereum Signed Message:\n%d%s", len(data), data)
-		return crypto.Keccak256([]byte(msg))
-	},"Pass(1)"},
-	{func(data[]byte) []byte{
-		return crypto.Keccak256([]byte(data))
-	},"pass(2)"},
-	{func(data[]byte) []byte{
-		d := crypto.Keccak256([]byte(data))
-		msg := fmt.Sprintf("\x19Ethereum Signed Message:\n%d%s", len(d), d)
-		return crypto.Keccak256([]byte(msg))
-	},"Pass geth prefix(3)"},
+func normalSignHasher(data []byte) []byte {
+	msg := fmt.Sprintf("\x19Ethereum Signed Message:\n%d%s", len(data), data)
+	return crypto.Keccak256([]byte(msg))
+}
+
+func rawSignHasher(data[]byte) []byte{
+	return crypto.Keccak256([]byte(data))
+}
+
+func gethPrefixSignHasher(data[]byte) []byte{
+	return normalSignHasher(rawSignHasher(data))
 }
 
 func has0xPrefix(input string) bool {
 	return len(input) >= 2 && input[0] == '0' && (input[1] == 'x' || input[1] == 'X')
 }
 
-func VerifyMessage(addr, sign, msg string) (bool, string) {
+
+var signhashers = []struct {
+	id int
+	fn func([]byte) []byte
+}{
+	{1, normalSignHasher},
+	{2, rawSignHasher},
+	{3, gethPrefixSignHasher},
+}
+
+func VerifyMessage(addr, sig, msg string) (error, int) {
 	addressStr := addr
-	signatureHex := sign
+	signatureHex := sig
 	message := []byte(msg)
 
 	if !common.IsHexAddress(addressStr) {
-		return false, fmt.Sprintf("Invalid address: %s", addressStr )
+		return fmt.Errorf("Invalid address: %s", addressStr ),0
 	}
 	address := common.HexToAddress(addressStr)
 
@@ -50,11 +54,11 @@ func VerifyMessage(addr, sign, msg string) (bool, string) {
 	}
 
 	if err != nil {
-		return false, fmt.Sprintf("Signature encoding is not hexadecimal: %v", err )
+		return fmt.Errorf("Signature encoding is not hexadecimal: %v", err ),0
 	}
 
 	if len(signature) != 65 {
-		return false, fmt.Sprintf("Signature must be 65 bytes long")
+		return fmt.Errorf("Signature must be 65 bytes long"),0
 	}
 	if signature[64] == 27 || signature[64] == 28 {
 		signature[64] -= 27 // Transform yellow paper V from 27/28 to 0/1
@@ -63,14 +67,14 @@ func VerifyMessage(addr, sign, msg string) (bool, string) {
 	for _, sh := range signhashers {
 		recoveredPubkey, err := crypto.SigToPub(sh.fn(message), signature)
 		if err != nil || recoveredPubkey == nil {
-			log.Fatalf("Signature verification failed: %v", err)
+			return fmt.Errorf("Signature verification failed: %v", err), 0
 		}
 
 		recoveredAddress := crypto.PubkeyToAddress(*recoveredPubkey)
 		if address == recoveredAddress {
-			return true, sh.msg
+			return nil, sh.id
 		}
 	}
 
-	return false, ""
+	return fmt.Errorf("The Signature Message Verification Failed."), 0
 }
