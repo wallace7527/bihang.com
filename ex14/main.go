@@ -4,7 +4,9 @@ import (
 	"github.com/valyala/fasthttp"
 	"fmt"
 	"encoding/json"
-	"github.com/wanglei-ok/evms"
+	"bihang.com/ex14/evms"
+	"bihang.com/ex14/bvms"
+	"strings"
 )
 
 type Result struct {
@@ -19,7 +21,17 @@ func httpHandle(ctx *fasthttp.RequestCtx) {
 	sig := string(ctx.FormValue("sig"))
 	msg := string(ctx.FormValue("msg"))
 
-	err, id := evms.VerifyMessage(addr, sig, msg)
+	var err error
+	var id int
+	if evms.IsValidAddress(addr) {
+		err, id = evms.VerifyMessage(addr, sig, msg)
+	}else if bvms.IsValidAddress(addr) {
+		sig = strings.Replace( sig, " ", "+", -1)
+		err, id = bvms.VerifyMessage(addr, sig, msg)
+	}else {
+		err, id = fmt.Errorf("Invalid address.") , 0
+	}
+
 	var result Result
 
 	result.Id = id
@@ -28,7 +40,7 @@ func httpHandle(ctx *fasthttp.RequestCtx) {
 		result.Message = fmt.Sprintf("%v", err)
 	}else {
 		result.Pass = true
-		result.Message = fmt.Sprintf("Message Signature Verified, Pass(%d)", id)
+		result.Message = fmt.Sprintf("Message Signature Verified.")
 	}
 
 	json.NewEncoder(ctx).Encode(result)
