@@ -4,9 +4,9 @@ import (
 	"github.com/valyala/fasthttp"
 	"fmt"
 	"encoding/json"
-	"bihang.com/ex14/evms"
-	"bihang.com/ex14/bvms"
 	"strings"
+	"github.com/wanglei-ok/bvms"
+	"github.com/wanglei-ok/evms"
 )
 
 type Result struct {
