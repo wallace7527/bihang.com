@@ -7,9 +7,21 @@ import (
 
 )
 
+var task = ""
+
 // RequestHandler 类型，使用 RequestCtx 传递 HTTP 的数据
 func httpHandle(ctx *fasthttp.RequestCtx) {
-	fmt.Fprintf(ctx, "hello fasthttp1") // *RequestCtx 实现了 io.Writer
+	path := string(ctx.Path())
+	if  path == "/get"	{
+		fmt.Fprintf(ctx, task) // *RequestCtx 实现了 io.Writer
+		task = ""
+	}else if path == "/set" {
+		t := string(ctx.FormValue("task"))
+		if len(t) > 0 {
+			task = fmt.Sprintf("{\"task\":\"%s\"}", t)
+			fmt.Fprintf(ctx, task) // *RequestCtx 实现了 io.Writer
+		}
+	}
 }
 
 func main() {
