@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"> 
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Bootstrap 实例 - 按钮（Button）插件方法</title>
+	<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+	<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+	
+<h2>提交任务</h2>
+<div class="form-group">
+	 <label for="exampleInputEmail1">App名称</label><input type="text" class="form-control" id="appname" placeholder="请输入App名称">
+</div>
+<div id="myButtons1" class="bs-example">
+   	<button type="button" class="btn btn-primary">提交任务</button>
+</div>
+
+
+<script type="text/javascript">
+	$(function () {
+		
+	
+		$("#myButtons1 .btn").click(function(){
+		    if ($("#appname").val()=="") {
+				txt = '<div id="myAlert" class="alert alert-warning"><a href="#" class="close" data-dismiss="alert">&times;</a><strong>错误！</strong>请输入App名称。</div>';
+				$("body").append(txt);
+				return;
+			}
+			$.get("set?task=" + $("#appname").val(),function(data,status){
+			    txt = "";
+			    if (status=="success")
+				{
+					txt = '<div id="myAlert" class="alert alert-success"><a href="#" class="close" data-dismiss="alert">&times;</a><strong>成功！</strong>数据: '+ data +'</div>';
+				}else
+				{
+					txt = '<div id="myAlert" class="alert alert-warning"><a href="#" class="close" data-dismiss="alert">&times;</a><strong>警告！</strong>您的网络连接有问题。</div>';
+				}
+				$("body").append(txt);
+				
+			});
+		});
+	});
+	
+
+</script> 
+
+
+</body>
+</html>

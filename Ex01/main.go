@@ -21,6 +21,8 @@ func httpHandle(ctx *fasthttp.RequestCtx) {
 			task = fmt.Sprintf("{\"task\":\"%s\"}", t)
 			fmt.Fprintf(ctx, task) // *RequestCtx 实现了 io.Writer
 		}
+	}else if path == "/" {
+		ctx.SendFile("home.html")
 	}
 }
 
