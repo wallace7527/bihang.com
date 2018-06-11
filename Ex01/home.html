@@ -12,7 +12,10 @@
 	
 <h2>添加下载任务</h2>
 <div class="form-group">
-	 <label for="appname">App名称</label><input type="text" class="form-control" id="appname" placeholder="请输入App名称">
+	 <label for="appname">搜索关键字</label><input type="text" class="form-control" id="appname" placeholder="请输入App搜索关键字">
+</div>
+<div class="form-group">
+    <label for="appid">唯一标识符</label><input type="text" class="form-control" id="appid" placeholder="请输入应用唯一标识符">
 </div>
 <div id="myButtons1" class="bs-example">
    	<button type="button" class="btn btn-primary">提交任务</button>
@@ -29,15 +32,20 @@
 				$("body").append(txt);
 				return;
 			}
-			$.get("set?task=" + $("#appname").val(),function(data,status){
+			$.get("set?task=" + $("#appname").val() + "&id=" + $("#appid").val(),function(data,status){
 			    txt = "";
-			    if (status=="success")
+                var obj = eval("(" + data + ")");
+
+			    if (status=="success" && obj.state == 0)
 				{
 					txt = '<div id="myAlert" class="alert alert-success"><a href="#" class="close" data-dismiss="alert">&times;</a><strong>成功！</strong>数据: '+ data +'</div>';
-				}else
+				}else if (status!="success")
 				{
 					txt = '<div id="myAlert" class="alert alert-warning"><a href="#" class="close" data-dismiss="alert">&times;</a><strong>警告！</strong>您的网络连接有问题。</div>';
-				}
+				}else
+                {
+                    txt = '<div id="myAlert" class="alert alert-danger"><a href="#" class="close" data-dismiss="alert">&times;</a><strong>错误！</strong>'+obj.msg+'</div>';
+                }
 				$("body").append(txt);
 				
 			});
