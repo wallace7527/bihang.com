@@ -42,8 +42,8 @@ type AppFeature struct {
 }
 
 type SetTaskResponse struct {
-	TaskStore TaskDataStore
-	Features  []AppFeature
+	TaskStore TaskDataStore	`json:"taskstore"`
+	Features  []AppFeature	`json:"features"`
 }
 
 type Element interface{}
