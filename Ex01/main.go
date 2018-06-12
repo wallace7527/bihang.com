@@ -10,6 +10,11 @@ import (
 	"strconv"
 
 	"github.com/wanglei-ok/logfile"
+	"os"
+	"time"
+	"io/ioutil"
+	"bytes"
+	"strings"
 )
 
 type DataResult struct {
@@ -178,7 +183,33 @@ func httpHandle(ctx *fasthttp.RequestCtx) {
 			log.Println("Reponse:", SetTaskResponse{taskStore, features})
 		}
 	} else if path == "/" {
-		ctx.SendFile("home.html")
+
+		originalFile, err := os.Open("home.tmpl")
+		if err != nil {
+			log.Println(err)
+		}
+		defer originalFile.Close()
+
+		data, err := ioutil.ReadAll(originalFile)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		apps, err := queryApps()
+		if err != nil {
+			JsonErrorResult(ctx, ERROR_SQL, fmt.Sprintf("查询应用列表出现错误"))
+			return
+		}
+		menustring := "<li role=\"presentation\"><a role=\"menuitem\" tabindex=\"-1\" href=\"#\">{menuitemstring}</a></li>"
+		var itemsbuf bytes.Buffer
+		for _, app := range apps {
+			itemsbuf.WriteString(strings.Replace(menustring,"{menuitemstring}",app,-1))
+		}
+
+		responseData := bytes.Replace(data, []byte("{menuitems}"), itemsbuf.Bytes(), -1)
+		ctx.Write(responseData)
+		ctx.SetContentType("text/html; charset=utf-8")
+		ctx.Response.Header.SetLastModified(time.Now())
 	}
 }
 

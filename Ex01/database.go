@@ -116,6 +116,7 @@ func queryFeatures(appid string) ([]AppFeature, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer stmt.Close()
 
 	rows, err := stmt.Query(appid)
 
@@ -141,6 +142,7 @@ func queryFeature(id string, orientation int) (fc string, oc string) {
 	if err != nil {
 		return
 	}
+	defer stmt.Close()
 
 	rows, err := stmt.Query(id, orientation)
 
@@ -165,4 +167,26 @@ func parseFeature(s string) (fc string, oc string) {
 		oc = strings.Replace(oc, "\"", "", -1)
 	}
 	return
+}
+
+
+func queryApps() ([]string, error) {
+
+	apps := make([]string, 0)
+
+	//查询数据
+
+	rows, err := db.Query("SELECT DISTINCT app_id FROM app_feature")
+
+	for rows.Next() {
+		appId := ""
+		err = rows.Scan(&appId)
+		if err != nil {
+			return nil, err
+		}
+
+		apps = append(apps, appId)
+	}
+
+	return apps, nil
 }
