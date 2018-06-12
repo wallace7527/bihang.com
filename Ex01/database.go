@@ -16,10 +16,10 @@ wanglei.ok@foxmail.com
 package main
 
 import (
+	"bytes"
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 	"strconv"
-	"bytes"
 	"strings"
 )
 
@@ -28,8 +28,8 @@ var db *sql.DB
 
 const (
 	//连接池属性
-	POOL_MAXOPENCONNS = 10	//最大连接数
-	POOL_MAXIDLECONNS = 2	//空闲连接数
+	POOL_MAXOPENCONNS = 10 //最大连接数
+	POOL_MAXIDLECONNS = 2  //空闲连接数
 )
 
 //打开数据库
@@ -43,7 +43,7 @@ func OpenDatabase(dsn string) error {
 	db1.SetMaxOpenConns(POOL_MAXOPENCONNS)
 	db1.SetMaxIdleConns(POOL_MAXIDLECONNS)
 	//连接
-	if  err = db1.Ping(); err != nil {
+	if err = db1.Ping(); err != nil {
 		return err
 	}
 	db = db1
@@ -67,15 +67,14 @@ func TxBegin() (*MyTx, error) {
 }
 
 //提交事务
-func (x *MyTx)Commit() error {
+func (x *MyTx) Commit() error {
 	return x.Tx.Commit()
 }
 
 //回滚事务
-func (x *MyTx)Rollback() error {
+func (x *MyTx) Rollback() error {
 	return x.Tx.Rollback()
 }
-
 
 //执行一条SQL语句
 func (x *MyTx) ExecSQL(sql string) (sql.Result, error) {
@@ -94,23 +93,23 @@ func ResultString(r sql.Result) string {
 	buf.WriteString("RowsAffected:")
 	if err != nil {
 		buf.WriteString(err.Error())
-	}else {
-		buf.WriteString(strconv.FormatInt(rowsAffected,10))
+	} else {
+		buf.WriteString(strconv.FormatInt(rowsAffected, 10))
 	}
 
 	lastInsertId, err := r.LastInsertId()
 	buf.WriteString(", LastInsertId:")
 	if err != nil {
 		buf.WriteString(err.Error())
-	}else {
-		buf.WriteString(strconv.FormatInt(lastInsertId,10))
+	} else {
+		buf.WriteString(strconv.FormatInt(lastInsertId, 10))
 	}
-	return  buf.String()
+	return buf.String()
 }
 
 func queryFeatures(appid string) ([]AppFeature, error) {
 
-	features := make([]AppFeature,0)
+	features := make([]AppFeature, 0)
 
 	//查询数据
 	stmt, err := db.Prepare("select orientation, app_feature from app_feature where app_id = ? ")
@@ -128,14 +127,14 @@ func queryFeatures(appid string) ([]AppFeature, error) {
 			return nil, err
 		}
 
-		appFeature:= AppFeature{appid, o, a}
+		appFeature := AppFeature{appid, o, a}
 		features = append(features, appFeature)
 	}
 
 	return features, nil
 }
 
-func queryFeature(id string,orientation int) (fc string, oc string) {
+func queryFeature(id string, orientation int) (fc string, oc string) {
 
 	//查询数据
 	stmt, err := db.Prepare("select  app_feature from app_feature where app_id = ? and orientation = ? limit 1")
@@ -158,12 +157,12 @@ func queryFeature(id string,orientation int) (fc string, oc string) {
 }
 
 func parseFeature(s string) (fc string, oc string) {
-	pos := strings.Index(s,",")
+	pos := strings.Index(s, ",")
 	if pos != -1 {
 		fc = strings.TrimSpace(s[:pos])
 		oc = strings.TrimSpace(s[pos+1:])
-		fc = strings.Replace(fc, "\"","",-1)
-		oc = strings.Replace(oc, "\"","",-1)
+		fc = strings.Replace(fc, "\"", "", -1)
+		oc = strings.Replace(oc, "\"", "", -1)
 	}
 	return
 }
