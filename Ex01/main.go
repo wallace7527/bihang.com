@@ -139,8 +139,8 @@ func httpHandle(ctx *fasthttp.RequestCtx) {
 			return
 		}
 
-		fmt.Printf("deviceid=%s, devicemodel=%s\n", deviceid, devicemodel)
-		fmt.Println("Has task:", !taskQueue.IsEmpty())
+		log.Printf("deviceid=%s, devicemodel=%s\n", deviceid, devicemodel)
+		log.Println("Has task:", !taskQueue.IsEmpty())
 
 		if !taskQueue.IsEmpty() {
 			taskStore := taskQueue.Poll().(TaskDataStore)
@@ -148,7 +148,7 @@ func httpHandle(ctx *fasthttp.RequestCtx) {
 
 			task := TaskData{taskStore.Task, taskStore.Market, fc, oc}
 			json.NewEncoder(ctx).Encode(task)
-			fmt.Println("Reponse:", task)
+			log.Println("Reponse:", task)
 		}
 	} else if path == "/set" {
 		t := string(ctx.FormValue("task"))
@@ -175,7 +175,7 @@ func httpHandle(ctx *fasthttp.RequestCtx) {
 				return
 			}
 
-			fmt.Println("Reponse:", SetTaskResponse{taskStore, features})
+			log.Println("Reponse:", SetTaskResponse{taskStore, features})
 		}
 	} else if path == "/" {
 		ctx.SendFile("home.html")
@@ -196,6 +196,6 @@ func main() {
 
 	// 一定要写 httpHandle，否则会有 nil pointer 的错误，没有处理 HTTP 数据的函数
 	if err := fasthttp.ListenAndServe("0.0.0.0:12345", httpHandle); err != nil {
-		fmt.Println("start fasthttp fail:", err.Error())
+		log.Println("start fasthttp fail:", err.Error())
 	}
 }
