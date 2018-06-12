@@ -14,6 +14,25 @@
 <div class="form-group">
 	 <label for="appname">搜索关键字</label><input type="text" class="form-control" id="appname" placeholder="请输入App搜索关键字">
 </div>
+<div class="dropdown">
+    <button type="button" class="btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">唯一标识符
+        <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+        <li role="presentation">
+            <a role="menuitem" tabindex="-1" href="#">旅行翻译官</a>
+        </li>
+        <li role="presentation">
+            <a role="menuitem" tabindex="-1" href="#">百代旅行</a>
+        </li>
+        <li role="presentation">
+            <a role="menuitem" tabindex="-1" href="#">锦江旅行</a>
+        </li>
+        <li role="presentation">
+            <a role="menuitem" tabindex="-1" href="#">芒果旅游</a>
+        </li>
+    </ul>
+</div>
 <div class="form-group">
     <label for="appid">唯一标识符</label><input type="text" class="form-control" id="appid" placeholder="请输入应用唯一标识符">
 </div>
@@ -32,6 +51,11 @@
 				$("body").append(txt);
 				return;
 			}
+            if ($("#appid").val()=="") {
+                txt = '<div id="myAlert" class="alert alert-warning"><a href="#" class="close" data-dismiss="alert">&times;</a><strong>错误！</strong>请输入唯一标识符。</div>';
+                $("body").append(txt);
+                return;
+            }
 			$.get("set?task=" + $("#appname").val() + "&id=" + $("#appid").val(),function(data,status){
 			    txt = "";
                 var obj = eval("(" + data + ")");
@@ -50,6 +74,11 @@
 				
 			});
 		});
+
+        $("[role='menuitem']").click(function(){
+            $("#appid").val($(this).text());
+        });
+
 	});
 	
 
