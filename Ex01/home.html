@@ -15,7 +15,7 @@
 	 <label for="appname">搜索关键字</label><input type="text" class="form-control" id="appname" placeholder="请输入App搜索关键字">
 </div>
 <div class="dropdown">
-    <button type="button" class="btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">唯一标识符
+    <button type="button" class="btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">选择安装App名称
         <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
@@ -34,7 +34,7 @@
     </ul>
 </div>
 <div class="form-group">
-    <label for="appid">唯一标识符</label><input type="text" class="form-control" id="appid" placeholder="请输入应用唯一标识符">
+    <label for="appid">App名称</label><input type="text" class="form-control" id="appid" placeholder="请输入需要安装的App名称">
 </div>
 <div id="myButtons1" class="bs-example">
    	<button type="button" class="btn btn-primary">提交任务</button>
@@ -47,12 +47,12 @@
 	
 		$("#myButtons1 .btn").click(function(){
 		    if ($("#appname").val()=="") {
-				txt = '<div id="myAlert" class="alert alert-warning"><a href="#" class="close" data-dismiss="alert">&times;</a><strong>错误！</strong>请输入App名称。</div>';
+				txt = '<div id="myAlert" class="alert alert-warning"><a href="#" class="close" data-dismiss="alert">&times;</a><strong>错误！</strong>请输入搜索关键字。</div>';
 				$("body").append(txt);
 				return;
 			}
             if ($("#appid").val()=="") {
-                txt = '<div id="myAlert" class="alert alert-warning"><a href="#" class="close" data-dismiss="alert">&times;</a><strong>错误！</strong>请输入唯一标识符。</div>';
+                txt = '<div id="myAlert" class="alert alert-warning"><a href="#" class="close" data-dismiss="alert">&times;</a><strong>错误！</strong>请输入App名称。</div>';
                 $("body").append(txt);
                 return;
             }
