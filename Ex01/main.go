@@ -15,6 +15,7 @@ import (
 	"io/ioutil"
 	"bytes"
 	"strings"
+	"sync"
 )
 
 type DataResult struct {
@@ -105,6 +106,7 @@ func (entry *sliceEntry) IsEmpty() bool {
 }
 
 var taskQueue = NewQueue()
+var rwMutex sync.RWMutex
 
 const (
 	ERROR_SUCCESS        = 0
@@ -134,6 +136,9 @@ func JsonErrorResult(ctx *fasthttp.RequestCtx, state int32, msg string) {
 func httpHandle(ctx *fasthttp.RequestCtx) {
 	path := string(ctx.Path())
 	if path == "/get" {
+		rwMutex.RLock()
+		defer rwMutex.RUnlock()
+
 		deviceid := string(ctx.FormValue("deviceid"))
 		devicemodel := string(ctx.FormValue("devicemodel"))
 		orientation := string(ctx.FormValue("orientation"))
@@ -156,6 +161,9 @@ func httpHandle(ctx *fasthttp.RequestCtx) {
 			log.Println("Reponse:", task)
 		}
 	} else if path == "/set" {
+		rwMutex.Lock()
+		defer rwMutex.Unlock()
+
 		t := string(ctx.FormValue("task"))
 		m := string(ctx.FormValue("market"))
 		appid := string(ctx.FormValue("id"))
